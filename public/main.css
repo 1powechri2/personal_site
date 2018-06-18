@@ -6,6 +6,10 @@ body {
   font-size: 180px;
 }
 
+.blog-header{
+  font-size: 435px;
+}
+
 .flex-container {
   display: flex;
   justify-content: center;

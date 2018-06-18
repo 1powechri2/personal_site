@@ -1,14 +1,21 @@
 require 'rack'
-require 'pry'
 
 class PersonalSite
   def self.call(env)
+    case_var = env["PATH_INFO"]
     case env["PATH_INFO"]
     when '/' then index
     when '/rock' then rock
-    # when env["PATH_INFO"].includes?('blog') then blog
     else
-      check_public_dir(env["PATH_INFO"])
+      check_dir(env["PATH_INFO"])
+    end
+  end
+
+  def self.check_dir(file)
+    if file.include?("blog")
+      blog(file)
+    else
+      check_public_dir(file)
     end
   end
 
@@ -21,19 +28,23 @@ class PersonalSite
   end
 
   def self.error
-    render_view('error.html', '404')
+    render_view('/error.html', '404')
   end
 
   def self.index
-    render_view('index.html')
+    render_view('/index.html')
   end
 
   def self.rock
-    render_view('rock.html')
+    render_view('/rock.html')
   end
 
-  def blog
-    render_view()
+  def self.blog(file)
+    if File.file?("./app/views#{file}.html")
+      render_view("#{file}.html")
+    else
+      error
+    end
   end
 
   def self.render_static(asset)
@@ -41,6 +52,6 @@ class PersonalSite
   end
 
   def self.render_view(page, code = '200')
-    [code, {'Content-Type' => 'text/html'}, [File.read("./app/views/#{page}")]]
+    [code, {'Content-Type' => 'text/html'}, [File.read("./app/views#{page}")]]
   end
 end
